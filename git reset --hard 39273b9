@@ -1,0 +1,17 @@
+[33m39273b9[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mrelease/playstore-v1[m[33m)[m tap flow + trip lifecycle, types, ETA, captain rules stable, scheduling hook wired in
+[33m2fc7878[m feat:stable trip flow, ETA polish, trip-type locking
+[33m3bafddc[m feat:hard lock trip type, ETA arrival polish, stable passenger flow
+[33m400f287[m feat(passenger): lock trip type, stabilize markers, ETA polish
+[33mfbe0aa2[m Passenger flow stable: pickup/dropoff, trip types, ETA progress
+[33m55422c3[m Passenger trip flow stable: pickup/dropoff, ETA, markers, card lifecycle
+[33m46c1c70[m passenger:stable trip flow, pickup/dropoff, ETA
+[33m9a125ca[m Passenger flow locked:locations-captain-trip lifecycle
+[33mb3c05b3[m[33m ([m[1;33mtag: [m[1;33mskipper-stable-trip-flow[m[33m)[m stabalize pasenger-captain trip flw with map markers and reset
+[33m3fea81f[m Passenger trip flow locked: pickup/dropoff, ride type, captain card restored
+[33m3f0d9b1[m Lock navigation: preserve passenger state across tabs (Uber-style IndexedStacked)
+[33mff6fd2a[m Passenger home stable: markers,captain card flow,search destination bar added
+[33mbee16ac[m[33m ([m[1;33mtag: [m[1;33mskipper-day1-ui-stable[m[33m)[m day1-ui-stable icons working captain toggle functional
+[33m642e860[m Laumcher icon generated and verified
+[33m4fec758[m Stabilized home selector and core flows
+[33m7a98146[m[33m ([m[1;33mtag: [m[1;33mskipper-skipper-toggle[m[33m)[m Day 1: Captain availability + passenger flow stable
+[33m4d080bb[m[33m ([m[1;32mday1-polish[m[33m)[m Skipper Day 0: Clean build, APK passes, core flows working

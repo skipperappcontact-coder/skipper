@@ -1,0 +1,40 @@
+name: skipper
+description: "skipper-water rideshare platform"
+publish_to: 'none'
+
+version: 1.0.0+3
+
+environment:
+  sdk: '>=3.3.4 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  google_maps_flutter: ^2.6.1
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^3.0.0
+
+  # Launcher icon generator
+  flutter_launcher_icons: ^0.13.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+
+# ─────────────────────────────
+# LAUNCHER ICON CONFIG
+# Boat-only icon (LOCKED)
+# ─────────────────────────────
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: assets/images/skipper_icon.png
+  min_sdk_android: 21

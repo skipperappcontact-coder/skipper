@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "629756118625",
+    "project_id": "httpssitescomviewskipper",
+    "storage_bucket": "httpssitescomviewskipper.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:629756118625:android:de04cfb09cbbc8506e8c20",
+        "android_client_info": {
+          "package_name": "com.skipper.com"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCB45VsA1kYSc3GA8Nkyuvc9GKlcqfsAv0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
