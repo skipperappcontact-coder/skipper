@@ -1,37 +1,71 @@
-# skipper
-
-skipper-water rideshare platform
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-* [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-* [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
-
-
-
-
-DLowe
-
-&nbsp;	
-
-1:10 PM (0 minutes ago)
-
-&nbsp;	
-
-&nbsp;	
-
-to me
-
 \# Skipper ⚓
+
+Skipper is a Flutter-based on-water transportation platform
+designed to evolve into an Uber-like service for boats.
+
+---
+
+## Current State (What Exists)
+
+- Flutter app scaffold (Android / iOS)
+- Passenger flow foundations
+- Trip types:
+  - On-demand
+  - Scheduled
+  - Delivery (⚠️ schedule hook still needed)
+- Firebase configuration present
+- Maps integration in progress
+
+This repository represents the **initial full Skipper Flutter codebase**.
+
+---
+
+## Near-Term Development Priorities (IMPORTANT)
+
+These items are intentionally listed to guide contributors.
+
+### 1. Routing & Polylines
+- Draw live polylines for active trips
+- Support captain → passenger → destination routing
+- Optimize for marine routes (not road assumptions)
+
+### 2. ETA Calculation
+- Compute ETA from polyline distance
+- Update ETA in real time as captain moves
+- Display ETA ring / progress indicator in UI
+
+### 3. Pricing Engine
+- Distance-based pricing (nautical miles)
+- Time-based modifiers
+- Surge / demand multipliers (future)
+- Delivery vs passenger pricing separation
+
+### 4. Scheduling Logic
+- Scheduled trips already support time hooks
+- ❗ Delivery trip type must add **same scheduling hook**
+- Background job to activate scheduled trips
+
+### 5. Captain Assignment Logic
+- Radius-based captain matching
+- Availability + vessel type filtering
+- Distance badge display
+
+---
+
+## Tech Stack
+
+- Flutter (Dart)
+- Firebase
+- Google Maps / Mapbox (TBD)
+- GitHub for version control
+
+---
+
+## How to Run
+
+```bash
+flutter pub get
+flutter run
 
 
 
