@@ -129,6 +129,11 @@ Introduce vessel-aware routing and pricing.
 - Capacity constraints
 - Vessel class pricing modifiers
 
+- FUTURE OPERATIONAL PROTOCOL (aligning color specific ensigns/flags on the boats with the trip types requested on the app)
+- Optional vessel identification signaling (flags / pennants)
+- Harbor-specific pickup protocols
+- Low-connectivity fallback procedures
+
 ---
 
 ## Phase 4 — UX & Reliability

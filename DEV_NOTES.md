@@ -188,7 +188,15 @@ Examples:
 If a feature cannot meet these rules, it does not ship.
 
 ---
+### Future: Visual & Maritime Signaling (Non-Blocking)
 
+Skipper may eventually support visual identification protocols common to marine operations,
+including flag or pennant signaling for vessel identification at pickup zones.
+
+This is an operational consideration only and is **not part of the current application scope**.
+No UI, logic, or enforcement should be implemented without explicit roadmap approval.
+
+------
 ## Final Note
 
 Skipper is building **trust on water**.
