@@ -1,373 +1,114 @@
-\# Skipper ⚓
 
-Skipper is a Flutter-based on-water transportation platform
-designed to evolve into an Uber-like service for boats.
+# Skipper
 
----
+Skipper is a Flutter-based marine transportation platform designed to enable
+on-demand and scheduled boat trips (passenger and delivery), similar in spirit
+to Uber — but built specifically for water-based transport.
 
-## Current State (What Exists)
-
-- Flutter app scaffold (Android / iOS)
-- Passenger flow foundations
-- Trip types:
-  - On-demand
-  - Scheduled
-  - Delivery (⚠️ schedule hook still needed)
-- Firebase configuration present
-- Maps integration in progress
-
-This repository represents the **initial full Skipper Flutter codebase**.
+This repository contains the **full Skipper Flutter application codebase**
+(Android + iOS) and supporting assets.
 
 ---
 
-## Near-Term Development Priorities (IMPORTANT)
+## Current Status
 
-These items are intentionally listed to guide contributors.
+This is an **early but complete foundation** of the Skipper app.
 
-### 1. Routing & Polylines
-- Draw live polylines for active trips
-- Support captain → passenger → destination routing
-- Optimize for marine routes (not road assumptions)
+### What exists today
+- Flutter app scaffold (Android / iOS / desktop targets)
+- Core project structure and navigation
+- Passenger trip flow (request → active → completion)
+- Delivery trip type (basic flow)
+- Scheduling logic (implemented for scheduled trips)
+- Firebase / Google Services configuration
+- Asset pipeline and branding placeholders
 
-### 2. ETA Calculation
-- Compute ETA from polyline distance
-- Update ETA in real time as captain moves
-- Display ETA ring / progress indicator in UI
+### What is NOT finished yet
+- Route polylines / map path drawing
+- ETA calculation
+- Pricing engine
+- Captain matching optimization
+- Delivery trip scheduling hook (planned)
 
-### 3. Pricing Engine
-- Distance-based pricing (nautical miles)
-- Time-based modifiers
-- Surge / demand multipliers (future)
-- Delivery vs passenger pricing separation
-
-### 4. Scheduling Logic
-- Scheduled trips already support time hooks
-- ❗ Delivery trip type must add **same scheduling hook**
-- Background job to activate scheduled trips
-
-### 5. Captain Assignment Logic
-- Radius-based captain matching
-- Availability + vessel type filtering
-- Distance badge display
+See **ROADMAP.md** for planned features and next steps.
 
 ---
 
 ## Tech Stack
 
-- Flutter (Dart)
-- Firebase
-- Google Maps / Mapbox (TBD)
-- GitHub for version control
+- **Flutter / Dart**
+- Android (Gradle)
+- iOS (Xcode)
+- Firebase / Google Services
+- Google Maps (planned expansion)
 
 ---
 
-## How to Run
+## Project Structure
 
-```bash
+```text
+skipper/
+├── lib/ # Flutter application code
+├── assets/ # Images and static assets
+├── android/ # Android native project
+├── ios/ # iOS native project
+├── test/ # Flutter tests
+├── README.md # Project overview (this file)
+├── ROADMAP.md # Planned features & next steps
+├── DEV_NOTES.md # Architecture notes & intent
+├── pubspec.yaml # Flutter dependencies
+
+
+Getting Started
+
+Prerequisites
+
+Flutter SDK (stable)
+Android Studio or VS Code
+Android Emulator or physical device
+Xcode (for iOS builds)
+
+Install dependencies
 flutter pub get
+
+Run the app
 flutter run
 
 
-
-Skipper is an on-demand and scheduled marine transportation platform designed for
-
-water-based commuting, leisure travel, and delivery services.
-
-
-
-The app connects passengers with licensed captains operating vessels in coastal,
-
-harbor, and island environments — enabling a water-native alternative to road-based
-
-rideshare.
-
-
-
-> ⚓ This README is the canonical, living documentation for Skipper.
-
-> All product, architecture, and workflow changes must be reflected here.
-
-
-
-Last updated: 2026-02-XX
-
-
-
----
-
-
-
-\## 🌊 Core Concepts
-
-
-
-Skipper is built around \*\*real marine constraints\*\*, not repurposed car logic.
-
-
-
-Key principles:
-
-\- Water-based routing and timing
-
-\- Captain-first operational controls
-
-\- Scheduled trips as a first-class feature
-
-\- Passenger clarity via ETA, pricing, and trip status
-
-
-
----
-
-
-
-\## 🚤 Trip Types
-
-
-
-Skipper currently supports four trip types:
-
-
-
-\### 1. Ride (Immediate)
-
-\- On-demand pickup
-
-\- Live ETA once captain is assigned
-
-\- Standard pricing model
-
-
-
-\### 2. Scheduled
-
-\- Passenger selects pickup date \& time
-
-\- No live ETA until captain dispatch window
-
-\- Used for commuting, airport runs, events
-
-
-
-\### 3. Delivery
-
-\- \*\*Scheduled-only\*\*
-
-\- Same scheduling flow as Scheduled Ride
-
-\- Pricing adjusted for cargo handling
-
-
-
-\### 4. Leisure
-
-\- Flexible timing
-
-\- Premium pricing multiplier
-
-\- Used for tours and charters
-
-
-
-⚠️ \*\*Trip type is locked once a request is made.\*\*
-
-
-
----
-
-
-
-\## 🗺️ Map \& Location Flow
-
-
-
-Passenger flow:
-
-1\. Tap map to set \*\*pickup\*\*
-
-2\. Tap map to set \*\*dropoff\*\*
-
-3\. Select trip type
-
-4\. (If Scheduled/Delivery) select pickup time
-
-5\. Select captain
-
-6\. Request trip
-
-
-
-Marker rules:
-
-\- Pickup \& dropoff markers persist through trip
-
-\- All online captains visible before request
-
-\- Only selected captain visible after request
-
-
-
----
-
-
-
-\## ⏱ ETA System
-
-
-
-\- ETA calculated using haversine distance
-
-\- Countdown updates every minute
-
-\- ETA hidden once captain arrives
-
-\- “Captain arriving now” state when ≤1 min
-
-
-
----
-
-
-
-\## 💰 Pricing (Current Logic)
-
-
-
-Pricing is distance-based with modifiers:
-
-\- Base fare + per-km rate
-
-\- Scheduled surcharge
-
-\- Leisure \& delivery multipliers
-
-
-
-Pricing recalculates on:
-
-\- Pickup/dropoff selection
-
-\- Trip type change (before request)
-
-
-
----
-
-
-
-\## 🧑‍✈️ Captain App Flow
-
-
-
-Captain Home is intentionally minimal:
-
-\- No passenger controls
-
-\- No pricing controls
-
-\- No profile editing
-
-
-
-Captain lifecycle:
-
-1\. Waiting
-
-2\. Accept trip
-
-3\. Arrived at pickup
-
-4\. Start trip
-
-5\. Complete trip
-
-
-
-Captain availability (online/offline) is handled separately.
-
-
-
----
-
-
-
-\## 🏗️ Architecture Overview
-
-
-
-\- Flutter (single codebase)
-
-\- Google Maps SDK
-
-\- Centralized AppState using ValueNotifiers
-
-\- No backend dependency yet (mock captains)
-
-
-
-Key files:
-
-lib/ ├── state/ │ └── app\_state.dart ├── screens/ │ ├── passenger\_home.dart │ └── captain\_home.dart
-
-Copy code
-
-
-
----
-
-
-
-\## 🔒 Documentation Rules
-
-
-
-\- This README is the source of truth
-
-\- Feature changes require README updates
-
-\- Deprecated behavior must be documented
-
-\- Experimental features must be labeled
-
-
-
----
-
-
-
-\## 🚧 Roadmap (High Level)
-
-
-
-Near-term:
-
-\- Backend dispatch service
-
-\- Real AIS / water routing
-
-\- Payments \& payouts
-
-\- Captain onboarding
-
-
-
-Long-term:
-
-\- Multi-city expansion
-
-\- Franchise operations
-
-\- Enterprise marina partnerships
-
-
-
----
-
-
-
-\## 📄 License
-
-
-
-Private / Pre-launch
-
+Key Concepts (High Level)
+Trip Types
+	Passenger trips (on-demand & scheduled)
+	Delivery trips (on-demand; scheduling planned)
+Scheduling
+	Scheduled trips have a reusable scheduling hook
+	Delivery trips will reuse this hook (see ROADMAP)
+Maps & Routing
+	Marine routing will differ from road routing
+	Polylines and ETA logic will be marine-aware
+
+Roadmap
+All upcoming work is tracked in ROADMAP.md, including:
+	Polyline route drawing
+	ETA calculation
+	Pricing logic
+	Delivery trip scheduling
+	Captain matching improvements
+Devs should treat ROADMAP.md as the source of truth for next tasks.
+
+
+Contributing
+This repo is actively evolving.
+Please:
+Follow existing architecture patterns
+Update ROADMAP.md when adding major features
+Keep commits scoped and descriptive
+
+Ownership
+This project is owned by Skipper.
+Brand assets, business logic, and roadmap direction are centrally managed.
+
+Questions / Context
+If something is unclear in the code, check:
+ROADMAP.md
+DEV_NOTES.md
+Then ask — architectural intent matters here.
