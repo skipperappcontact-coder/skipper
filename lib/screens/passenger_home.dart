@@ -43,7 +43,7 @@ class _PassengerHomeState extends State<PassengerHome> {
   }
 
   // ─────────────────────────────
-  // MARKERS
+  // MARKERS (UNCHANGED LOGIC)
   // ─────────────────────────────
   Set<Marker> _buildMarkers(
       List<Captain> captains,
@@ -114,12 +114,65 @@ class _PassengerHomeState extends State<PassengerHome> {
   }
 
   // ─────────────────────────────
-  // ACTION PANEL
+  // ETA BANNER (POLISHED)
+  // ─────────────────────────────
+  Widget _buildEtaBanner(TripStatus status) {
+    if (_displayEta == null) return const SizedBox();
+
+    if (status != TripStatus.requested &&
+        status != TripStatus.accepted) {
+      return const SizedBox();
+    }
+
+    final text = _displayEta! <= 1
+        ? 'Captain arriving now'
+        : '~$_displayEta min away';
+
+    return Positioned(
+      left: 16,
+      right: 16,
+      bottom: 104,
+      child: AnimatedOpacity(
+        opacity: 1,
+        duration: const Duration(milliseconds: 300),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.black87,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.timer, color: Colors.white, size: 18),
+              const SizedBox(width: 8),
+              Text(
+                text,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ─────────────────────────────
+  // ACTION PANEL (POLISHED COPY)
   // ─────────────────────────────
   Widget _buildActionPanel(TripStatus status, Captain? selected) {
     switch (status) {
       case TripStatus.idle:
-        if (selected == null) return const Text('Select a skipper');
+        if (selected == null) {
+          return const Text(
+            'Select a captain to continue',
+            style: TextStyle(fontSize: 16),
+          );
+        }
         return ElevatedButton(
           onPressed: () => AppState.requestTrip(selected),
           child: const Text('Request Skipper'),
@@ -129,28 +182,38 @@ class _PassengerHomeState extends State<PassengerHome> {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Waiting for captain…'),
-            const SizedBox(height: 8),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 12),
+            const Text('Looking for a nearby captain'),
             TextButton(
               onPressed: AppState.cancelTrip,
-              child: const Text('Cancel'),
+              child: const Text('Cancel request'),
             ),
           ],
         );
 
       case TripStatus.accepted:
-        return const Text('Captain accepted');
+        return const Text(
+          'Captain is on the way',
+          style: TextStyle(fontSize: 16),
+        );
 
       case TripStatus.arrived:
-        return const Text('Captain arrived');
+        return const Text(
+          'Captain has arrived',
+          style: TextStyle(fontSize: 16),
+        );
 
       case TripStatus.inProgress:
-        return const Text('Trip in progress');
+        return const Text(
+          'Enjoy your ride',
+          style: TextStyle(fontSize: 16),
+        );
 
       case TripStatus.completed:
         return ElevatedButton(
           onPressed: AppState.resetTrip,
-          child: const Text('Done'),
+          child: const Text('Finish trip'),
         );
 
       case TripStatus.cancelled:
@@ -159,43 +222,6 @@ class _PassengerHomeState extends State<PassengerHome> {
           child: const Text('Reset'),
         );
     }
-  }
-
-  // ─────────────────────────────
-  // ETA BANNER
-  // ─────────────────────────────
-  Widget _buildEtaBanner(TripStatus status) {
-    if (_displayEta == null) return const SizedBox();
-    if (status != TripStatus.requested &&
-        status != TripStatus.accepted) {
-      return const SizedBox();
-    }
-
-    final text = _displayEta! <= 1
-        ? 'Captain arriving now'
-        : 'Captain arriving in $_displayEta min';
-
-    return Positioned(
-      left: 16,
-      right: 16,
-      bottom: 96,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.black87,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-    );
   }
 
   // ─────────────────────────────
@@ -228,8 +254,7 @@ class _PassengerHomeState extends State<PassengerHome> {
                               GoogleMap(
                                 initialCameraPosition:
                                 const CameraPosition(
-                                  target:
-                                  LatLng(37.7749, -122.4194),
+                                  target: LatLng(37.7749, -122.4194),
                                   zoom: 12,
                                 ),
                                 markers: _buildMarkers(
@@ -244,6 +269,7 @@ class _PassengerHomeState extends State<PassengerHome> {
                                 myLocationButtonEnabled: true,
                               ),
 
+                              // TOP BAR
                               const Positioned(
                                 top: 56,
                                 left: 16,
@@ -265,19 +291,19 @@ class _PassengerHomeState extends State<PassengerHome> {
                                 Positioned(
                                   left: 16,
                                   right: 16,
-                                  bottom: 140,
+                                  bottom: 148,
                                   child: _CaptainCard(
                                     captain: selected!,
                                   ),
                                 ),
 
+                              // BOTTOM ACTION BAR
                               Positioned(
                                 left: 16,
                                 right: 16,
                                 bottom: 24,
                                 child: Container(
-                                  padding:
-                                  const EdgeInsets.all(16),
+                                  padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius:
@@ -291,7 +317,9 @@ class _PassengerHomeState extends State<PassengerHome> {
                                   ),
                                   child: Center(
                                     child: _buildActionPanel(
-                                        status, selected),
+                                      status,
+                                      selected,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -312,8 +340,7 @@ class _PassengerHomeState extends State<PassengerHome> {
 }
 
 // ─────────────────────────────
-// TRIP TYPE PILLS
-// ─────────────────────────────
+// TRIP TYPE PILLS (LOCKED)
 class _TripTypePills extends StatelessWidget {
   const _TripTypePills();
 
@@ -342,8 +369,6 @@ class _TripTypePills extends StatelessWidget {
 }
 
 // ─────────────────────────────
-// SCHEDULE PICKER (FIXED)
-// ─────────────────────────────
 class _ScheduledButton extends StatelessWidget {
   const _ScheduledButton();
 
@@ -352,7 +377,6 @@ class _ScheduledButton extends StatelessWidget {
     return ValueListenableBuilder<TripType>(
       valueListenable: AppState.tripType,
       builder: (_, type, __) {
-        // ✅ FIX: delivery ALSO requires scheduling
         if (type != TripType.scheduled &&
             type != TripType.delivery) {
           return const SizedBox();
@@ -390,6 +414,7 @@ class _ScheduledButton extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────
 class _SearchBar extends StatelessWidget {
   const _SearchBar();
 
@@ -401,7 +426,7 @@ class _SearchBar extends StatelessWidget {
       child: const TextField(
         readOnly: true,
         decoration: InputDecoration(
-          hintText: 'Pickup → Dropoff',
+          hintText: 'Pickup → Destination',
           prefixIcon: Icon(Icons.search),
           border: InputBorder.none,
           contentPadding:
@@ -412,6 +437,7 @@ class _SearchBar extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────
 class _CaptainCard extends StatelessWidget {
   final Captain captain;
   const _CaptainCard({required this.captain});
@@ -421,7 +447,8 @@ class _CaptainCard extends StatelessWidget {
     return Card(
       elevation: 8,
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16)),
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -430,8 +457,9 @@ class _CaptainCard extends StatelessWidget {
             Text(
               captain.name,
               style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold),
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 4),
             Text('Vessel: ${captain.vessel.name}'),
@@ -443,7 +471,9 @@ class _CaptainCard extends StatelessWidget {
                     size: 18, color: Colors.amber),
                 const SizedBox(width: 4),
                 Text(
-                    '${captain.rating.value} (${captain.rating.totalTrips})'),
+                  '${captain.rating.value} '
+                      '(${captain.rating.totalTrips})',
+                ),
               ],
             ),
           ],
