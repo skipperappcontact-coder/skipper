@@ -30,7 +30,9 @@ class _PassengerHomeState extends State<PassengerHome> {
   }
 
   void _syncEta() {
-    setState(() => _displayEta = AppState.etaMinutes.value);
+    setState(() {
+      _displayEta = AppState.etaMinutes.value;
+    });
   }
 
   @override
@@ -84,84 +86,36 @@ class _PassengerHomeState extends State<PassengerHome> {
     }
 
     markers.addAll(
-      captains.where((c) => c.isOnline).map(
-            (c) => Marker(
-          markerId: MarkerId(c.id),
-          position: c.location,
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueAzure,
-          ),
-          onTap: () {
-            if (AppState.tripStatus.value == TripStatus.idle) {
-              AppState.selectedCaptain.value = c;
-            }
-          },
+      captains
+          .where((c) => c.isOnline)
+          .map((c) => Marker(
+        markerId: MarkerId(c.id),
+        position: c.location,
+        icon: BitmapDescriptor.defaultMarkerWithHue(
+          BitmapDescriptor.hueAzure,
         ),
-      ),
+        onTap: () {
+          if (AppState.tripStatus.value ==
+              TripStatus.idle) {
+            AppState.selectedCaptain.value = c;
+          }
+        },
+      )),
     );
 
     return markers;
   }
 
   // ─────────────────────────────
-  // ROUTING (SAFE POLYLINE)
-  // ─────────────────────────────
-  Set<Polyline> _buildRoute(LatLng? pickup, LatLng? dropoff) {
-    if (pickup == null || dropoff == null) return {};
-
-    return {
-      Polyline(
-        polylineId: const PolylineId('route'),
-        points: [pickup, dropoff],
-        width: 4,
-        color: Colors.blueAccent,
-      ),
-    };
-  }
-
-  // ─────────────────────────────
-  // ETA BANNER
-  // ─────────────────────────────
-  Widget _buildEtaBanner(TripStatus status) {
-    if (_displayEta == null) return const SizedBox();
-    if (status != TripStatus.requested &&
-        status != TripStatus.accepted) {
-      return const SizedBox();
-    }
-
-    final text = _displayEta! <= 1
-        ? 'Captain arriving now'
-        : 'Captain arriving in $_displayEta min';
-
-    return Positioned(
-      left: 16,
-      right: 16,
-      bottom: 96,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.black87,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ─────────────────────────────
   // ACTION PANEL
   // ─────────────────────────────
-  Widget _buildActionPanel(TripStatus status, Captain? selected) {
+  Widget _buildActionPanel(
+      TripStatus status, Captain? selected) {
     switch (status) {
       case TripStatus.idle:
-        if (selected == null) return const Text('Select a skipper');
+        if (selected == null) {
+          return const Text('Select a skipper');
+        }
         return ElevatedButton(
           onPressed: () => AppState.requestTrip(selected),
           child: const Text('Request Skipper'),
@@ -172,6 +126,7 @@ class _PassengerHomeState extends State<PassengerHome> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text('Waiting for captain…'),
+            const SizedBox(height: 8),
             TextButton(
               onPressed: AppState.cancelTrip,
               child: const Text('Cancel'),
@@ -188,7 +143,13 @@ class _PassengerHomeState extends State<PassengerHome> {
       case TripStatus.inProgress:
         return const Text('Trip in progress');
 
-      default:
+      case TripStatus.completed:
+        return ElevatedButton(
+          onPressed: AppState.resetTrip,
+          child: const Text('Done'),
+        );
+
+      case TripStatus.cancelled:
         return ElevatedButton(
           onPressed: AppState.resetTrip,
           child: const Text('Reset'),
@@ -196,9 +157,40 @@ class _PassengerHomeState extends State<PassengerHome> {
     }
   }
 
-  // ─────────────────────────────
-  // BUILD
-  // ─────────────────────────────
+  Widget _buildEtaBanner(TripStatus status) {
+    if (_displayEta == null) return const SizedBox();
+    if (status != TripStatus.requested &&
+        status != TripStatus.accepted) {
+      return const SizedBox();
+    }
+
+    final text = _displayEta! <= 1
+        ? 'Captain arriving now'
+        : 'Captain arriving in $_displayEta min';
+
+    return Positioned(
+      left: 16,
+      right: 16,
+      bottom: 96,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.black87,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -222,7 +214,8 @@ class _PassengerHomeState extends State<PassengerHome> {
                               GoogleMap(
                                 initialCameraPosition:
                                 const CameraPosition(
-                                  target: LatLng(37.7749, -122.4194),
+                                  target: LatLng(
+                                      37.7749, -122.4194),
                                   zoom: 12,
                                 ),
                                 markers: _buildMarkers(
@@ -232,10 +225,10 @@ class _PassengerHomeState extends State<PassengerHome> {
                                   pickup,
                                   dropoff,
                                 ),
-                                polylines:
-                                _buildRoute(pickup, dropoff),
-                                onTap: AppState.handleMapTap,
+                                onTap:
+                                AppState.handleMapTap,
                                 zoomControlsEnabled: false,
+                                myLocationButtonEnabled: true,
                               ),
 
                               const Positioned(
@@ -260,15 +253,57 @@ class _PassengerHomeState extends State<PassengerHome> {
                                 right: 16,
                                 bottom: 24,
                                 child: Container(
-                                  padding: const EdgeInsets.all(16),
+                                  padding:
+                                  const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius:
-                                    BorderRadius.circular(16),
+                                    BorderRadius.circular(
+                                        16),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        blurRadius: 10,
+                                        color:
+                                        Colors.black26,
+                                      ),
+                                    ],
                                   ),
-                                  child: Center(
-                                    child:
-                                    _buildActionPanel(status, selected),
+                                  child: Column(
+                                    mainAxisSize:
+                                    MainAxisSize.min,
+                                    children: [
+                                      ValueListenableBuilder<
+                                          double?>(
+                                        valueListenable:
+                                        AppState
+                                            .estimatedPrice,
+                                        builder: (_, price,
+                                            __) {
+                                          if (price == null) {
+                                            return const SizedBox();
+                                          }
+                                          return Padding(
+                                            padding:
+                                            const EdgeInsets
+                                                .only(
+                                                bottom:
+                                                8),
+                                            child: Text(
+                                              'Estimated fare: \$${price.toStringAsFixed(2)}',
+                                              style:
+                                              const TextStyle(
+                                                fontSize: 16,
+                                                fontWeight:
+                                                FontWeight
+                                                    .w600,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      _buildActionPanel(
+                                          status, selected),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -289,8 +324,6 @@ class _PassengerHomeState extends State<PassengerHome> {
 }
 
 // ─────────────────────────────
-// TRIP TYPE PILLS
-// ─────────────────────────────
 class _TripTypePills extends StatelessWidget {
   const _TripTypePills();
 
@@ -300,7 +333,8 @@ class _TripTypePills extends StatelessWidget {
       valueListenable: AppState.tripType,
       builder: (_, type, __) {
         final locked =
-            AppState.tripStatus.value != TripStatus.idle;
+            AppState.tripStatus.value !=
+                TripStatus.idle;
 
         return Wrap(
           spacing: 8,
@@ -309,7 +343,8 @@ class _TripTypePills extends StatelessWidget {
               label: Text(t.name),
               selected: t == type,
               onSelected:
-              locked ? null : (_) => AppState.setTripType(t),
+              locked ? null : (_) =>
+                  AppState.setTripType(t),
             );
           }).toList(),
         );
@@ -318,7 +353,6 @@ class _TripTypePills extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────
 class _ScheduledButton extends StatelessWidget {
   const _ScheduledButton();
 
@@ -334,24 +368,29 @@ class _ScheduledButton extends StatelessWidget {
 
         return ElevatedButton(
           onPressed: () async {
-            final d = await showDatePicker(
+            final date = await showDatePicker(
               context: context,
               initialDate: DateTime.now(),
               firstDate: DateTime.now(),
               lastDate:
-              DateTime.now().add(const Duration(days: 30)),
+              DateTime.now().add(
+                  const Duration(days: 30)),
             );
-            if (d == null) return;
+            if (date == null) return;
 
-            final t = await showTimePicker(
+            final time = await showTimePicker(
               context: context,
               initialTime: TimeOfDay.now(),
             );
-            if (t == null) return;
+            if (time == null) return;
 
-            AppState.setScheduledTime(
-              DateTime(d.year, d.month, d.day, t.hour, t.minute),
-            );
+            AppState.setScheduledTime(DateTime(
+              date.year,
+              date.month,
+              date.day,
+              time.hour,
+              time.minute,
+            ));
           },
           child: const Text('Select pickup time'),
         );
@@ -360,20 +399,23 @@ class _ScheduledButton extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────
 class _SearchBar extends StatelessWidget {
   const _SearchBar();
 
   @override
   Widget build(BuildContext context) {
-    return const Material(
+    return Material(
       elevation: 4,
-      child: TextField(
+      borderRadius: BorderRadius.circular(12),
+      child: const TextField(
         readOnly: true,
         decoration: InputDecoration(
           hintText: 'Pickup → Dropoff',
           prefixIcon: Icon(Icons.search),
           border: InputBorder.none,
+          contentPadding:
+          EdgeInsets.symmetric(
+              horizontal: 16, vertical: 14),
         ),
       ),
     );
