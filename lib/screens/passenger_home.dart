@@ -43,7 +43,7 @@ class _PassengerHomeState extends State<PassengerHome> {
   }
 
   // ─────────────────────────────
-  // MARKERS (LOCKED ORDER)
+  // MARKERS
   // ─────────────────────────────
   Set<Marker> _buildMarkers(
       List<Captain> captains,
@@ -161,6 +161,9 @@ class _PassengerHomeState extends State<PassengerHome> {
     }
   }
 
+  // ─────────────────────────────
+  // ETA BANNER
+  // ─────────────────────────────
   Widget _buildEtaBanner(TripStatus status) {
     if (_displayEta == null) return const SizedBox();
     if (status != TripStatus.requested &&
@@ -195,6 +198,9 @@ class _PassengerHomeState extends State<PassengerHome> {
     );
   }
 
+  // ─────────────────────────────
+  // BUILD
+  // ─────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -222,7 +228,8 @@ class _PassengerHomeState extends State<PassengerHome> {
                               GoogleMap(
                                 initialCameraPosition:
                                 const CameraPosition(
-                                  target: LatLng(37.7749, -122.4194),
+                                  target:
+                                  LatLng(37.7749, -122.4194),
                                   zoom: 12,
                                 ),
                                 markers: _buildMarkers(
@@ -259,8 +266,9 @@ class _PassengerHomeState extends State<PassengerHome> {
                                   left: 16,
                                   right: 16,
                                   bottom: 140,
-                                  child:
-                                  _CaptainCard(captain: selected!),
+                                  child: _CaptainCard(
+                                    captain: selected!,
+                                  ),
                                 ),
 
                               Positioned(
@@ -304,7 +312,7 @@ class _PassengerHomeState extends State<PassengerHome> {
 }
 
 // ─────────────────────────────
-// TRIP TYPE PILLS (LOCKED)
+// TRIP TYPE PILLS
 // ─────────────────────────────
 class _TripTypePills extends StatelessWidget {
   const _TripTypePills();
@@ -333,6 +341,9 @@ class _TripTypePills extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────
+// SCHEDULE PICKER (FIXED)
+// ─────────────────────────────
 class _ScheduledButton extends StatelessWidget {
   const _ScheduledButton();
 
@@ -341,7 +352,11 @@ class _ScheduledButton extends StatelessWidget {
     return ValueListenableBuilder<TripType>(
       valueListenable: AppState.tripType,
       builder: (_, type, __) {
-        if (type != TripType.scheduled) return const SizedBox();
+        // ✅ FIX: delivery ALSO requires scheduling
+        if (type != TripType.scheduled &&
+            type != TripType.delivery) {
+          return const SizedBox();
+        }
 
         return ElevatedButton(
           onPressed: () async {
@@ -349,7 +364,8 @@ class _ScheduledButton extends StatelessWidget {
               context: context,
               initialDate: DateTime.now(),
               firstDate: DateTime.now(),
-              lastDate: DateTime.now().add(const Duration(days: 30)),
+              lastDate:
+              DateTime.now().add(const Duration(days: 30)),
             );
             if (date == null) return;
 
@@ -404,16 +420,19 @@ class _CaptainCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 8,
-      shape:
-      RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(captain.name,
-                style: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(
+              captain.name,
+              style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 4),
             Text('Vessel: ${captain.vessel.name}'),
             Text('Capacity: ${captain.vessel.capacity}'),

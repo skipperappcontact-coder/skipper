@@ -24,6 +24,7 @@ class AppState {
   // ─────────────────────────────
   // CORE STATE
   // ─────────────────────────────
+
   static final ValueNotifier<Captain?> selectedCaptain =
   ValueNotifier<Captain?>(null);
 
@@ -48,6 +49,7 @@ class AppState {
   // ─────────────────────────────
   // PASSENGER ACTIONS
   // ─────────────────────────────
+
   static void setTripType(TripType type) {
     if (tripStatus.value != TripStatus.idle) return;
     tripType.value = type;
@@ -66,15 +68,19 @@ class AppState {
   }
 
   static void requestTrip(Captain captain) {
-    // Scheduled rides REQUIRE time
-    if (tripType.value == TripType.scheduled &&
+    // 🔒 GUARDRAIL:
+    // Scheduled AND Delivery trips REQUIRE a pickup time
+    if ((tripType.value == TripType.scheduled ||
+        tripType.value == TripType.delivery) &&
         scheduledTime.value == null) {
       return;
     }
 
     selectedCaptain.value = captain;
 
-    if (tripType.value != TripType.scheduled) {
+    // ETA only applies to non-scheduled flows
+    if (tripType.value == TripType.ride ||
+        tripType.value == TripType.leisure) {
       _recalculateEta();
     } else {
       etaMinutes.value = null;
@@ -94,16 +100,18 @@ class AppState {
     pickup.value = null;
     dropoff.value = null;
     etaMinutes.value = null;
-    tripType.value = TripType.ride;
     scheduledTime.value = null;
+    tripType.value = TripType.ride;
   }
 
   // ─────────────────────────────
   // CAPTAIN ACTIONS
   // ─────────────────────────────
+
   static void acceptTrip() {
     if (tripStatus.value == TripStatus.requested) {
-      if (tripType.value != TripType.scheduled) {
+      if (tripType.value == TripType.ride ||
+          tripType.value == TripType.leisure) {
         _recalculateEta();
       }
       tripStatus.value = TripStatus.accepted;
@@ -130,8 +138,9 @@ class AppState {
   }
 
   // ─────────────────────────────
-  // ETA
+  // ETA CALCULATION
   // ─────────────────────────────
+
   static void _recalculateEta() {
     final captain = selectedCaptain.value;
     final p = pickup.value;
